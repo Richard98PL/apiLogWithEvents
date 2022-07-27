@@ -22,14 +22,15 @@ public without sharing class APILogEventTriggerHandlerHelper {
         log.Status__c = event.Status__c;
         log.Status_Code__c = event.Status_Code__c;
         log.Type__c = event.Type__c;
+        log.Relationship_API_Name__c = event.Relationship_API_Name__c;
 
         try{
-            if(String.isNotBlank(event.Main_API_Name__c) &&
+            if(String.isNotBlank(event.Relationship_API_Name__c) &&
                String.isNotBlank(event.External_Field_API_Name__c) &&
                String.isNotBlank(event.External_Id__c)){
                 SObject sObj = Schema.getGlobalDescribe().get(event.Main_API_Name__c).newSObject();
                 sObj.put(event.External_Field_API_Name__c, event.External_Id__c);
-                log.putSObject(event.Main_API_Name__c.replace('__c', '__r'), sObj);
+                log.putSObject(event.Relationship_API_Name__c.replace('__c', '__r'), sObj);
             }
         }catch(Exception e){
             System.debug(e.getMessage());
@@ -37,8 +38,8 @@ public without sharing class APILogEventTriggerHandlerHelper {
         }
 
         try{
-            if(String.isNotBlank(event.Main_API_Name__c) && String.isNotBlank(event.Salesforce_Id__c)){
-                log.put(event.Main_API_Name__c, event.Salesforce_Id__c);
+            if(String.isNotBlank(event.Relationship_API_Name__c) && String.isNotBlank(event.Salesforce_Id__c)){
+                log.put(event.Relationship_API_Name__c, event.Salesforce_Id__c);
             }
         }catch(Exception e){
             System.debug(e.getMessage());
