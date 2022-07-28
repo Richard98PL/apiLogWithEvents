@@ -4,7 +4,7 @@ public without sharing class APILogEventTriggerHandlerHelper {
         for(API_Log_Event__e event : events){
             logs.add(parseLog(event));
         }
-        Database.insert(logs, false);
+        List<Database.SaveResult> results = Database.insert(logs, false);
     }
 
     private API_Log__c parseLog(API_Log_Event__e event) {
@@ -23,14 +23,16 @@ public without sharing class APILogEventTriggerHandlerHelper {
         log.Status_Code__c = event.Status_Code__c;
         log.Type__c = event.Type__c;
         log.Relationship_API_Name__c = event.Relationship_API_Name__c;
+        log.URL__c = event.URL__c;
+        log.Method__c = event.Method__c;
+        log.DML_Error__c = event.DML_Error__c;
+        log.DML_Error_Message__c = event.DML_Error_Message__c;
 
+        Boolean wasLookupSuccess = false;
         try{
-            if(String.isNotBlank(event.Relationship_API_Name__c) &&
-               String.isNotBlank(event.External_Field_API_Name__c) &&
-               String.isNotBlank(event.External_Id__c)){
-                SObject sObj = Schema.getGlobalDescribe().get(event.Main_API_Name__c).newSObject();
-                sObj.put(event.External_Field_API_Name__c, event.External_Id__c);
-                log.putSObject(event.Relationship_API_Name__c.replace('__c', '__r'), sObj);
+            if(String.isNotBlank(event.Relationship_API_Name__c) && String.isNotBlank(event.Salesforce_Id__c)){
+                log.put(event.Relationship_API_Name__c, event.Salesforce_Id__c);
+                wasLookupSuccess = true;
             }
         }catch(Exception e){
             System.debug(e.getMessage());
@@ -38,8 +40,12 @@ public without sharing class APILogEventTriggerHandlerHelper {
         }
 
         try{
-            if(String.isNotBlank(event.Relationship_API_Name__c) && String.isNotBlank(event.Salesforce_Id__c)){
-                log.put(event.Relationship_API_Name__c, event.Salesforce_Id__c);
+            if(!wasLookupSuccess && String.isNotBlank(event.Relationship_API_Name__c) &&
+               String.isNotBlank(event.External_Field_API_Name__c) &&
+               String.isNotBlank(event.External_Id__c)){
+                SObject sObj = Schema.getGlobalDescribe().get(event.Main_API_Name__c).newSObject();
+                sObj.put(event.External_Field_API_Name__c, event.External_Id__c);
+                log.putSObject(event.Relationship_API_Name__c.replace('__c', '__r'), sObj);
             }
         }catch(Exception e){
             System.debug(e.getMessage());
