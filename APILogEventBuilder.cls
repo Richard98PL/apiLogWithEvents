@@ -2,17 +2,35 @@ public without sharing class APILogEventBuilder {
     String dmlOperation;
     String externalId;
     String externalSystem;
-    Boolean icCustom;
     String payload;
     String response;
     String salesforceId;
     String status;
     Integer statusCode;
     String type;
+    String URL;
+    String method;
+    String dmlErrorMessage;
+
+    Boolean icCustom;
+    Boolean dmlError;
 
     SObjectType mainSObjectType;
     SObjectField externalField;
     SObjectField relationshipField;
+
+    public APILogEventBuilder dmlErrorMessage(String dmlErrorMessage){
+        this.dmlErrorMessage = dmlErrorMessage;
+        return this;
+    }
+    public APILogEventBuilder method(String method){
+        this.method = method;
+        return this;
+    }
+    public APILogEventBuilder URL(String URL){
+        this.URL = URL;
+        return this;
+    }
 
     public APILogEventBuilder relationshipField(SObjectField value) {
         this.relationshipField = value;
@@ -70,6 +88,11 @@ public without sharing class APILogEventBuilder {
         return this;
     }
 
+    public APILogEventBuilder dmlError(Boolean dmlError){
+        this.dmlError = dmlError;
+        return this;
+    }
+
     public API_Log_Event__e build() {
         API_Log_Event__e event = new API_Log_Event__e();
         event.DML_Operation__c = this.dmlOperation;
@@ -85,6 +108,10 @@ public without sharing class APILogEventBuilder {
         event.Status_Code__c = this.statusCode;
         event.Type__c = this.type;
         event.Relationship_API_Name__c = String.valueOf(this.relationshipField);
+        event.URL__c = this.URL;
+        event.Method__c = this.method;
+        event.DML_Error__c = this.dmlError;
+        event.DML_Error_Message__c = this.dmlErrorMessage;
         return event;
     }
 }
