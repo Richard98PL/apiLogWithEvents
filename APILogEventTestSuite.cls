@@ -64,6 +64,10 @@
                 .payload('payload')
                 .icCustom(true)
                 .externalSystem('externalSystem')
+                .method('method')
+                .URL('URL')
+                .dmlError(true)
+                .dmlErrorMessage('dmlErrorMessage')
                 .build();
         events.add(event);
         Test.startTest();
@@ -73,17 +77,22 @@
         Test.stopTest();
 
         API_Log__c singleLog = [
-                SELECT Id, Response__c, Payload__c
+                SELECT Id, Response__c, Payload__c, URL__c, DML_Error_Message__c
                 FROM API_Log__c
                 WHERE DML_Operation__c = 'dmlOperation' AND
                 Type__c = 'type' AND
                 Status_Code__c = 200 AND
                 Status__c = 'status' AND
                 Is_Custom__c = true AND
-                External_System__c = 'externalSystem'
+                External_System__c = 'externalSystem' AND
+                Method__c = 'method' AND
+                DML_Error__c = true
         ];
+
         System.assert(singleLog != null);
         System.assert(singleLog.Payload__c == 'payload');
         System.assert(singleLog.Response__c == 'response');
+        System.assert(singleLog.URL__c == 'URL');
+        System.assert(singleLog.DML_Error_Message__c == 'dmlErrorMessage');
     }
 }
